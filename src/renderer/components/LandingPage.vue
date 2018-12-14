@@ -9,6 +9,42 @@
       <div class="column">4</div>
       <div class="column">5</div>
     </div>
+
+      <div class="columns">
+          <div class="column">
+              <div class="field">
+                  <b-checkbox>Basic</b-checkbox>
+              </div>
+              <div class="field">
+                  <b-checkbox v-model="checkbox">
+                      {{ checkbox }}
+                  </b-checkbox>
+              </div>
+              <div class="field">
+                  <b-checkbox v-model="checkboxCustom"
+                              true-value="Yes"
+                              false-value="No">
+                      {{ checkboxCustom }}
+                  </b-checkbox>
+              </div>
+              <div class="field">
+                  <b-checkbox :indeterminate="true">
+                      Indeterminate
+                  </b-checkbox>
+              </div>
+              <div class="field">
+                  <b-checkbox disabled>Disabled</b-checkbox>
+              </div>
+          </div>
+          <div class="column">
+              <b-field label="Select a date">
+                  <b-datepicker
+                          placeholder="Click to select..."
+                          icon="calendar-today">
+                  </b-datepicker>
+              </b-field>
+          </div>
+      </div>
   </div>
 </template>
 
