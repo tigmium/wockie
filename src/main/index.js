@@ -3,6 +3,19 @@
 import {app, BrowserWindow, ipcMain} from 'electron'
 import axios from 'axios'
 
+const handle_axios_error = function(err) {
+
+    if (err.response) {
+        const custom_error = new Error(err.response.statusText || 'Internal server error');
+        custom_error.status = err.response.status || 500;
+        custom_error.description = err.response.data ? err.response.data.message : null;
+        throw custom_error;
+    }
+    throw new Error(err);
+
+}
+axios.interceptors.response.use(r => r, handle_axios_error);
+
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -67,10 +80,19 @@ app.on('ready', () => {
 })
  */
 
-
-
-ipcMain.on('asynchronous-message', async (event, arg) => {
-  const resp = await axios.get('https://www.npmjs.com/package/full-text-search');
-  console.log(resp)
-  event.sender.send('asynchronous-reply', 'pong')
+ipcMain.on('asynchronous-message', (event, arg) => {
+  const resp = axios({
+      method: 'get',
+      url: 'https://www.npmjs.com/package/full-text-search',
+      responseType: 'text'
+  }).then(r=>{
+      console.log('add開始')
+      search.add(r.data);
+      console.log('add終了')
+      const s = search.search('search');
+      console.log(s);
+      event.sender.send('asynchronous-reply', 'pong')
+  }).catch(e=>{
+      console.log(e)
+  });
 })
