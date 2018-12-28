@@ -1,6 +1,7 @@
 'use strict'
 
-import { app, BrowserWindow } from 'electron'
+import {app, BrowserWindow, ipcMain} from 'electron'
+import axios from 'axios'
 
 /**
  * Set `__static` path to static files in production
@@ -65,3 +66,11 @@ app.on('ready', () => {
   if (process.env.NODE_ENV === 'production') autoUpdater.checkForUpdates()
 })
  */
+
+
+
+ipcMain.on('asynchronous-message', async (event, arg) => {
+  const resp = await axios.get('https://www.npmjs.com/package/full-text-search');
+  console.log(resp)
+  event.sender.send('asynchronous-reply', 'pong')
+})
