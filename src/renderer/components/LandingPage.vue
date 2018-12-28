@@ -1,69 +1,25 @@
 <template>
   <div id="wrapper">
     <div class="columns">
-      <div class="column"><a class="button">
-        Button
-      </a></div>
-      <div class="column">2</div>
-      <div class="column">3</div>
-      <div class="column">4</div>
-      <div class="column">5</div>
-    </div>
-
-    <div class="columns">
       <div class="column">
-        <b-field label="Name">
-          <b-input v-model="url"></b-input>
+        <div v-for="doc in documents">{{doc.title}}</div>
+      </div>
+
+      <div class="column">
+        <b-field>
+          <b-input placeholder="Search..." type="search" icon="magnify" v-model="url">
+          </b-input>
+          <p class="control">
+            <button class="button is-primary" v-on:click="onClickWget">Get Page</button>
+          </p>
         </b-field>
-      </div>
-      <div class="column">
-        <button class="button is-primary" slot="trigger" v-on:click="onClickWget">wget</button>
-      </div>
-    </div>
 
-    <div class="columns">
-      <div class="column">
-        <b-field label="Word">
-          <b-input v-model="word"></b-input>
-        </b-field>
-      </div>
-      <div class="column">
-        <button class="button is-primary" slot="trigger" v-on:click="onClickSearch">search</button>
-      </div>
-    </div>
-
-    <div class="columns">
-      <div class="column">
-        <div class="field">
-          <b-checkbox>Basic</b-checkbox>
-        </div>
-        <div class="field">
-          <b-checkbox v-model="checkbox">
-            {{ checkbox }}
-          </b-checkbox>
-        </div>
-        <div class="field">
-          <b-checkbox v-model="checkboxCustom"
-                      true-value="Yes"
-                      false-value="No">
-            {{ checkboxCustom }}
-          </b-checkbox>
-        </div>
-        <div class="field">
-          <b-checkbox :indeterminate="true">
-            Indeterminate
-          </b-checkbox>
-        </div>
-        <div class="field">
-          <b-checkbox disabled>Disabled</b-checkbox>
-        </div>
-      </div>
-      <div class="column">
-        <b-field label="Select a date">
-          <b-datepicker
-            placeholder="Click to select..."
-            icon="calendar-today">
-          </b-datepicker>
+        <b-field>
+          <b-input placeholder="Search..." type="search" icon="magnify" v-model="word">
+          </b-input>
+          <p class="control">
+            <button class="button is-primary" v-on:click="onClickSearch">Search</button>
+          </p>
         </b-field>
       </div>
     </div>
@@ -78,17 +34,23 @@
   export default {
     name: 'landing-page',
     components: {SystemInformation},
+    mounted() {
+      ipcRenderer.on('asynchronous-reply', this.onIpcAsynchronousReply.bind(this));
+      ipcRenderer.on('search-end', this.onIpcSearchEnd.bind(this));
+      ipcRenderer.on('log', this.onIpcLog.bind(this));
+      ipcRenderer.on('update-documents', this.onIpcUpdateDocuments.bind(this));
+    },
     data: () => {
       return {
         url: 'https://buefy.github.io/documentation/',
         word: 'test',
+        documents: [],
       }
     },
     methods: {
       open(link) {
         this.$electron.shell.openExternal(link)
       },
-
       onClickWget() {
         console.log('on click!!!!!')
         ipcRenderer.send('asynchronous-message', this.url)
@@ -96,25 +58,25 @@
 
       onClickSearch() {
         ipcRenderer.send('search', this.word)
+      },
+      onIpcAsynchronousReply(event, arg) {
+        console.log(arg) // pong
+      },
+      onIpcSearchEnd(event, arg) {
+        console.log(arg) // pong
+      },
+      onIpcLog(event, msg) {
+        console.log(msg) // pong
+      },
+      onIpcUpdateDocuments(event, documents) {
+        this.$set(this, 'documents', documents);
       }
     }
   }
-
-  ipcRenderer.on('asynchronous-reply', (event, arg) => {
-    console.log(arg) // pong
-  })
-
-  ipcRenderer.on('search-end', (event, arg) => {
-    console.log(arg) // pong
-  })
-
-  ipcRenderer.on('log', (event, msg) => {
-    console.log(msg)
-  })
 </script>
 
 <style lang="scss">
   @import "~bulma/sass/utilities/_all.sass";
   @import "~bulma/sass/grid/columns.sass";
-  @import "~bulma/sass/elements/button.sass"
+  @import "~bulma/sass/elements/button.sass";
 </style>

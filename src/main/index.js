@@ -6,10 +6,13 @@ import h2p from 'html2plaintext'
 import elasticlunr from 'elasticlunr'
 import getLinks from 'html-links'
 import esr from 'escape-string-regexp'
+import cheerio from 'cheerio'
 
 
 const index = elasticlunr(function () {
   this.addField('body');
+  this.addField('title');
+  this.addField('url');
   this.setRef('id');
 });
 
@@ -98,9 +101,13 @@ ipcMain.on('asynchronous-message', async (event, url) => {
     responseType: 'text'
   })
   const html = resp.data;
+  const $ = cheerio.load(html);
+  const title = $('title').text();
   const doc = {
     id: index.documentStore.length,
-    body: h2p(html)
+    body: h2p(html),
+    title,
+    url,
   };
   index.addDoc(doc);
   let links = getLinks({
@@ -122,13 +129,18 @@ ipcMain.on('asynchronous-message', async (event, url) => {
       responseType: 'text'
     })
     const html = resp.data;
+    const $ = cheerio.load(html);
+    const title = $('title').text();
     const doc = {
       id: index.documentStore.length,
-      body: h2p(html)
+      body: h2p(html),
+      title,
+      url,
     };
     index.addDoc(doc);
   });
   event.sender.send('asynchronous-reply', links)
+  event.sender.send('update-documents', index.documentStore.docs)
 })
 
 ipcMain.on('search', (event, word) => {
