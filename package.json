@@ -60,6 +60,8 @@
     "buefy": "^0.7.1",
     "bulma": "^0.7.2",
     "elasticlunr": "^0.9.5",
+    "escape-string-regexp": "^1.0.5",
+    "html-links": "^1.0.0",
     "html2plaintext": "^2.1.0",
     "vue": "^2.5.16",
     "vue-electron": "^1.0.6",

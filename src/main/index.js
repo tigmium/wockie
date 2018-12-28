@@ -4,6 +4,9 @@ import {app, BrowserWindow, ipcMain} from 'electron'
 import axios from 'axios'
 import h2p from 'html2plaintext'
 import elasticlunr from 'elasticlunr'
+import getLinks from 'html-links'
+import esr from 'escape-string-regexp'
+
 
 const index = elasticlunr(function () {
   this.addField('body');
@@ -94,13 +97,23 @@ ipcMain.on('asynchronous-message', (event, url) => {
     url: url,
     responseType: 'text'
   }).then(r => {
+    const html = r.data;
     const doc = {
       id: index.documentStore.length,
-      body: h2p(r.data)
+      body: h2p(html)
     };
     index.addDoc(doc);
     console.log('追加完了');
-    event.sender.send('asynchronous-reply', 'pong')
+    let links = getLinks({
+      html,
+      url,
+    });
+    links = links.filter(link => {
+      const regexp = new RegExp('^' + esr(url));
+      return regexp.test(link.normalized);
+      // return true;
+    });
+    event.sender.send('asynchronous-reply', links)
   }).catch(e => {
     console.log(e)
   });

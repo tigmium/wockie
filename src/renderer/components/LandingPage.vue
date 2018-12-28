@@ -80,7 +80,7 @@
     components: {SystemInformation},
     data: () => {
       return {
-        url: 'https://www.npmjs.com/package/html2plaintext',
+        url: 'https://buefy.github.io/documentation/',
         word: 'test',
       }
     },
