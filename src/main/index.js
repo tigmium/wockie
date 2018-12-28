@@ -2,8 +2,13 @@
 
 import {app, BrowserWindow, ipcMain} from 'electron'
 import axios from 'axios'
+import h2p from 'html2plaintext'
+import elasticlunr from 'elasticlunr'
 
-const handle_axios_error = function(err) {
+const index = elasticlunr(function () {
+  this.addField('body');
+  this.setRef('id');
+});
 
 // const handle_axios_error = function (err) {
 //
@@ -31,7 +36,7 @@ const winURL = process.env.NODE_ENV === 'development'
   ? `http://localhost:9080`
   : `file://${__dirname}/index.html`
 
-function createWindow () {
+function createWindow() {
   /**
    * Initial window options
    */
@@ -82,19 +87,30 @@ app.on('ready', () => {
 })
  */
 
-ipcMain.on('asynchronous-message', (event, arg) => {
+ipcMain.on('asynchronous-message', (event, url) => {
+  console.log('追加処理開始');
   const resp = axios({
-      method: 'get',
-      url: 'https://www.npmjs.com/package/full-text-search',
-      responseType: 'text'
-  }).then(r=>{
-      console.log('add開始')
-      search.add(r.data);
-      console.log('add終了')
-      const s = search.search('search');
-      console.log(s);
-      event.sender.send('asynchronous-reply', 'pong')
-  }).catch(e=>{
-      console.log(e)
+    method: 'get',
+    url: url,
+    responseType: 'text'
+  }).then(r => {
+    const doc = {
+      id: index.documentStore.length,
+      body: h2p(r.data)
+    };
+    index.addDoc(doc);
+    console.log('追加完了');
+    event.sender.send('asynchronous-reply', 'pong')
+  }).catch(e => {
+    console.log(e)
   });
+})
+
+ipcMain.on('search', (event, word) => {
+  const result = index.search(word, {
+    fields: {
+      body: {boost: 1}
+    }
+  });
+  event.sender.send('search-end', result);
 })

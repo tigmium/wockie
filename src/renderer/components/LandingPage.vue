@@ -12,7 +12,23 @@
 
     <div class="columns">
       <div class="column">
+        <b-field label="Name">
+          <b-input v-model="url"></b-input>
+        </b-field>
+      </div>
+      <div class="column">
         <button class="button is-primary" slot="trigger" v-on:click="onClickWget">wget</button>
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="column">
+        <b-field label="Word">
+          <b-input v-model="word"></b-input>
+        </b-field>
+      </div>
+      <div class="column">
+        <button class="button is-primary" slot="trigger" v-on:click="onClickSearch">search</button>
       </div>
     </div>
 
@@ -62,19 +78,33 @@
   export default {
     name: 'landing-page',
     components: {SystemInformation},
+    data: () => {
+      return {
+        url: 'https://www.npmjs.com/package/html2plaintext',
+        word: 'test',
+      }
+    },
     methods: {
       open(link) {
         this.$electron.shell.openExternal(link)
       },
 
-      async onClickWget() {
-        console.log('on click!!!!')
-        ipcRenderer.send('asynchronous-message', 'ping')
+      onClickWget() {
+        console.log('on click!!!!!')
+        ipcRenderer.send('asynchronous-message', this.url)
+      },
+
+      onClickSearch() {
+        ipcRenderer.send('search', this.word)
       }
     }
   }
 
   ipcRenderer.on('asynchronous-reply', (event, arg) => {
+    console.log(arg) // pong
+  })
+
+  ipcRenderer.on('search-end', (event, arg) => {
     console.log(arg) // pong
   })
 </script>
