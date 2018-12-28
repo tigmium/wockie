@@ -16,3 +16,8 @@ new Vue({
   store,
   template: '<App/>'
 }).$mount('#app')
+
+// Open dev tools initially when in development mode
+import { remote } from 'electron'
+const currentWindow = remote.getCurrentWindow()
+currentWindow.openDevTools()
