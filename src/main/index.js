@@ -90,33 +90,45 @@ app.on('ready', () => {
 })
  */
 
-ipcMain.on('asynchronous-message', (event, url) => {
-  console.log('追加処理開始');
-  const resp = axios({
+ipcMain.on('asynchronous-message', async (event, url) => {
+  event.sender.send('log', 'get web page: ' + url);
+  const resp = await axios({
     method: 'get',
     url: url,
     responseType: 'text'
-  }).then(r => {
-    const html = r.data;
+  })
+  const html = resp.data;
+  const doc = {
+    id: index.documentStore.length,
+    body: h2p(html)
+  };
+  index.addDoc(doc);
+  let links = getLinks({
+    html,
+    url,
+  });
+  links = links.filter(link => {
+    const regexp = new RegExp('^' + esr(url));
+    return regexp.test(link.normalized);
+    // return true;
+  });
+
+  links.forEach(async link => {
+    const url = link.normalized;
+    event.sender.send('log', 'get web page: ' + url);
+    const resp = await axios({
+      method: 'get',
+      url: url,
+      responseType: 'text'
+    })
+    const html = resp.data;
     const doc = {
       id: index.documentStore.length,
       body: h2p(html)
     };
     index.addDoc(doc);
-    console.log('追加完了');
-    let links = getLinks({
-      html,
-      url,
-    });
-    links = links.filter(link => {
-      const regexp = new RegExp('^' + esr(url));
-      return regexp.test(link.normalized);
-      // return true;
-    });
-    event.sender.send('asynchronous-reply', links)
-  }).catch(e => {
-    console.log(e)
   });
+  event.sender.send('asynchronous-reply', links)
 })
 
 ipcMain.on('search', (event, word) => {

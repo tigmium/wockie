@@ -107,6 +107,10 @@
   ipcRenderer.on('search-end', (event, arg) => {
     console.log(arg) // pong
   })
+
+  ipcRenderer.on('log', (event, msg) => {
+    console.log(msg)
+  })
 </script>
 
 <style lang="scss">
