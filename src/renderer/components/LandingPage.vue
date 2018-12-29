@@ -21,6 +21,11 @@
             <button class="button is-primary" v-on:click="onClickSearch">Search</button>
           </p>
         </b-field>
+
+        <div v-for="match in matched">
+          <div><a v-bind:href="match.url" target="_blank">{{match.title}}</a></div>
+          <div>score: {{match.score}}</div>
+        </div>
       </div>
     </div>
   </div>
@@ -45,6 +50,7 @@
         url: 'https://buefy.github.io/documentation/',
         word: 'test',
         documents: [],
+        matched: [],
       }
     },
     methods: {
@@ -62,8 +68,8 @@
       onIpcAsynchronousReply(event, arg) {
         console.log(arg) // pong
       },
-      onIpcSearchEnd(event, arg) {
-        console.log(arg) // pong
+      onIpcSearchEnd(event, matched) {
+        this.$set(this, 'matched', matched);
       },
       onIpcLog(event, msg) {
         console.log(msg) // pong

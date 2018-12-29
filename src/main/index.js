@@ -144,10 +144,14 @@ ipcMain.on('asynchronous-message', async (event, url) => {
 })
 
 ipcMain.on('search', (event, word) => {
-  const result = index.search(word, {
+  let result = index.search(word, {
     fields: {
       body: {boost: 1}
     }
+  });
+  result = result.map(r => {
+    const doc = index.documentStore.getDoc(r.ref);
+    return Object.assign(doc, r);
   });
   event.sender.send('search-end', result);
 })
