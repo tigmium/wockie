@@ -8,6 +8,7 @@ import getLinks from 'html-links'
 import esr from 'escape-string-regexp'
 import cheerio from 'cheerio'
 import CreateDocTreeService from '../renderer/services/CreateDocTreeService'
+import storage from 'electron-json-storage'
 
 const index = elasticlunr(function () {
   this.addField('body');
@@ -143,6 +144,8 @@ ipcMain.on('asynchronous-message', async (event, url) => {
     });
   }));
 
+  await saveDocuments();
+
   event.sender.send('update-documents', CreateDocTreeService.createDocTree(index.documentStore.docs))
 })
 
@@ -157,4 +160,53 @@ ipcMain.on('search', (event, word) => {
     return Object.assign(doc, r);
   });
   event.sender.send('search-end', result);
+})
+
+const saveDocuments = async () => {
+  return new Promise((resolve, reject) => {
+    const docs = index.documentStore.toJSON();
+
+    storage.set('documents', docs, e => {
+      if (e) {
+        reject(e);
+      } else {
+        resolve()
+      }
+    });
+  })
+}
+
+const loadDocuments = async () => {
+  return new Promise((resolve, reject) => {
+    storage.has('documents', (e, hasKye) => {
+      console.log('1')
+      if (e) {
+        reject(e);
+        return;
+      }
+
+      if (hasKye) {
+        storage.get('documents', (e, docs) => {
+          if (e) {
+            reject(e);
+          } else {
+            index.documentStore = elasticlunr.DocumentStore.load(docs);
+            resolve();
+          }
+        });
+      } else {
+        resolve();
+      }
+    })
+  });
+}
+
+ipcMain.on('save-documents', async (event) => {
+  await saveDocuments();
+  event.sender.send('save-documents-end');
+})
+
+ipcMain.on('load-documents', async (event) => {
+  await loadDocuments();
+  event.sender.send('load-documents-end', CreateDocTreeService.createDocTree(index.documentStore.docs));
 })

@@ -62,6 +62,10 @@
       ipcRenderer.on('search-end', this.onIpcSearchEnd.bind(this));
       ipcRenderer.on('log', this.onIpcLog.bind(this));
       ipcRenderer.on('update-documents', this.onIpcUpdateDocuments.bind(this));
+      ipcRenderer.on('save-documents-end', this.onIpcSaveDocumentsEnd.bind(this));
+      ipcRenderer.on('load-documents-end', this.onIpcLoadDocumentsEnd.bind(this));
+
+      ipcRenderer.send('load-documents')
     },
     data: () => {
       return {
@@ -93,6 +97,12 @@
         console.log(msg) // pong
       },
       onIpcUpdateDocuments(event, docTree) {
+        this.$set(this, 'docTree', docTree);
+      },
+      onIpcSaveDocumentsEnd(event) {
+
+      },
+      onIpcLoadDocumentsEnd(event, docTree) {
         this.$set(this, 'docTree', docTree);
       }
     }
