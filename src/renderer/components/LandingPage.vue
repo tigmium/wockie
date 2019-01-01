@@ -2,7 +2,25 @@
   <div id="wrapper">
     <div class="columns">
       <div class="column">
-        <div v-for="doc in documents">{{doc.title}}</div>
+        <b-collapse class="card" v-for="node in docTree" :key="node.domain" v-bind:open="false">
+          <div slot="trigger" slot-scope="props" class="card-header">
+            <p class="card-header-title">
+              {{node.domain}}
+            </p>
+            <a class="card-header-icon">
+              <b-icon
+                :icon="props.open ? 'menu-down' : 'menu-up'">
+              </b-icon>
+            </a>
+          </div>
+          <div class="card-content">
+            <div class="content">
+              <div v-for="doc in node.documents" :key="doc.id">
+                <a v-bind:href="doc.url" target="_blank" v-bind:alt="doc.url"><div>{{doc.title}}</div></a>
+              </div>
+            </div>
+          </div>
+        </b-collapse>
       </div>
 
       <div class="column">
@@ -49,7 +67,7 @@
       return {
         url: 'https://buefy.github.io/documentation/',
         word: 'test',
-        documents: [],
+        docTree: [],
         matched: [],
       }
     },
@@ -74,8 +92,8 @@
       onIpcLog(event, msg) {
         console.log(msg) // pong
       },
-      onIpcUpdateDocuments(event, documents) {
-        this.$set(this, 'documents', documents);
+      onIpcUpdateDocuments(event, docTree) {
+        this.$set(this, 'docTree', docTree);
       }
     }
   }

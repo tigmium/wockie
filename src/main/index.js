@@ -7,7 +7,7 @@ import elasticlunr from 'elasticlunr'
 import getLinks from 'html-links'
 import esr from 'escape-string-regexp'
 import cheerio from 'cheerio'
-
+import CreateDocTreeService from '../renderer/services/CreateDocTreeService'
 
 const index = elasticlunr(function () {
   this.addField('body');
@@ -119,28 +119,31 @@ ipcMain.on('asynchronous-message', async (event, url) => {
     return regexp.test(link.normalized);
     // return true;
   });
+  event.sender.send('log', links)
 
-  links.forEach(async link => {
-    const url = link.normalized;
-    event.sender.send('log', 'get web page: ' + url);
-    const resp = await axios({
-      method: 'get',
-      url: url,
-      responseType: 'text'
-    })
-    const html = resp.data;
-    const $ = cheerio.load(html);
-    const title = $('title').text();
-    const doc = {
-      id: index.documentStore.length,
-      body: h2p(html),
-      title,
-      url,
-    };
-    index.addDoc(doc);
-  });
-  event.sender.send('asynchronous-reply', links)
-  event.sender.send('update-documents', index.documentStore.docs)
+  await Promise.all(links.map(link => {
+    return new Promise(async (resolve, reject) => {
+      const url = link.normalized;
+      const resp = await axios({
+        method: 'get',
+        url: url,
+        responseType: 'text'
+      });
+      const html = resp.data;
+      const $ = cheerio.load(html);
+      const title = $('title').text();
+      const doc = {
+        id: index.documentStore.length,
+        body: h2p(html),
+        title,
+        url,
+      };
+      index.addDoc(doc);
+      resolve();
+    });
+  }));
+
+  event.sender.send('update-documents', CreateDocTreeService.createDocTree(index.documentStore.docs))
 })
 
 ipcMain.on('search', (event, word) => {

@@ -23,12 +23,62 @@ describe('CreateDocTreeService.js', () => {
       {
         url: 'https://buefy.github.io/documentation/constructor-options',
       },
+      {
+        url: 'https://jp.vuejs.org/v2/guide/',
+      },
+      {
+        url: 'https://jp.vuejs.org/v2/guide/computed.html',
+      },
+      {
+        url: 'https://jp.vuejs.org/v2/guide/migration-vue-router.html',
+      },
+      {
+        url: 'https://laravel.com/docs/5.7',
+      },
+      {
+        url: 'https://laravel.com/docs/5.7/contributions',
+      },
     ]);
-    assert.deepEqual(tree, {
-      documentation: {
-        customization: {},
-        'constructor-options': {}
-      }
-    });
+    assert.deepEqual(tree, [
+      {
+        'domain': 'buefy.github.io',
+        documents: [
+          {
+            url: 'https://buefy.github.io/documentation/',
+          },
+          {
+            url: 'https://buefy.github.io/documentation/customization',
+          },
+          {
+            url: 'https://buefy.github.io/documentation/constructor-options',
+          },
+        ]
+      },
+      {
+        'domain': 'jp.vuejs.org',
+        documents: [
+          {
+            url: 'https://jp.vuejs.org/v2/guide/',
+          },
+          {
+            url: 'https://jp.vuejs.org/v2/guide/computed.html',
+          },
+          {
+            url: 'https://jp.vuejs.org/v2/guide/migration-vue-router.html',
+          },
+        ]
+      },
+      {
+        'domain': 'laravel.com',
+        documents: [
+          {
+            url: 'https://laravel.com/docs/5.7',
+          },
+          {
+            url: 'https://laravel.com/docs/5.7/contributions',
+          },
+        ]
+      },
+    ]);
   })
 })

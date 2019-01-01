@@ -1,24 +1,29 @@
 import Url from "url-parse";
 
-const trimAny = (str, any) => {
-  return str.replace(new RegExp("^" + any + "+|" + any + "+$", "g"),'');
-};
-
 export default {
   createDocTree(docs) {
     const tree = [];
-    docs.forEach((doc) => {
-      const url = new Url(doc.url);
-      const fullPath = url.pathname;
+    const indexCache = {};
+    Object.keys(docs).forEach(key => {
+        const doc = docs[key];
+        const url = new Url(doc.url);
+        const domain = url.host;
 
-      let current = tree;
-      trimAny(fullPath, '/').split('/').forEach(path => {
-        if (current[path] === undefined) {
-          current[path] = [];
+        if (indexCache[domain] === undefined) {
+          const index = tree.length;
+          tree.push({
+            domain,
+            documents: [
+              doc
+            ]
+          });
+          indexCache[domain] = index;
+        } else {
+          const index = indexCache[domain];
+          tree[index].documents.push(doc);
         }
-        current = current[path];
-      });
-    });
+      }
+    );
     return tree;
   }
 }
