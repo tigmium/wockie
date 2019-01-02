@@ -157,8 +157,10 @@ ipcMain.on('search', (event, word) => {
   });
   result = result.map(r => {
     const doc = index.documentStore.getDoc(r.ref);
-    return Object.assign(doc, r);
-  });
+    return Object.assign(r, {
+      doc,
+    });
+  })
   event.sender.send('search-end', result);
 })
 

@@ -16,7 +16,7 @@
           <div class="card-content">
             <div class="content">
               <div v-for="doc in node.documents" :key="doc.id">
-                <a v-bind:href="doc.url" target="_blank" v-bind:alt="doc.url"><div>{{doc.title}}</div></a>
+                <div><a v-bind:alt="doc.url" v-on:click="e => onClickDocLink(e, doc)">{{doc.title}}</a></div>
               </div>
             </div>
           </div>
@@ -40,8 +40,8 @@
           </p>
         </b-field>
 
-        <div v-for="match in matched">
-          <div><a v-bind:href="match.url" target="_blank">{{match.title}}</a></div>
+        <div v-for="match in matches">
+          <div><a v-bind:alt="match.doc.url" v-on:click="e => onClickDocLink(e, match.doc)">{{match.doc.title}}</a></div>
           <div>score: {{match.score}}</div>
         </div>
       </div>
@@ -51,7 +51,7 @@
 
 <script>
   import SystemInformation from './LandingPage/SystemInformation'
-  import {ipcRenderer} from 'electron'
+  import {ipcRenderer, shell} from 'electron'
   // import console from 'console'
 
   export default {
@@ -72,7 +72,7 @@
         url: 'https://buefy.github.io/documentation/',
         word: 'test',
         docTree: [],
-        matched: [],
+        matches: [],
       }
     },
     methods: {
@@ -87,11 +87,14 @@
       onClickSearch() {
         ipcRenderer.send('search', this.word)
       },
+      onClickDocLink(e, doc) {
+        shell.openExternal(doc.url);
+      },
       onIpcAsynchronousReply(event, arg) {
         console.log(arg) // pong
       },
-      onIpcSearchEnd(event, matched) {
-        this.$set(this, 'matched', matched);
+      onIpcSearchEnd(event, matches) {
+        this.$set(this, 'matches', matches);
       },
       onIpcLog(event, msg) {
         console.log(msg) // pong
