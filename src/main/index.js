@@ -10,25 +10,6 @@ import cheerio from 'cheerio'
 import CreateDocTreeService from '../renderer/services/CreateDocTreeService'
 import storage from 'electron-json-storage'
 
-const index = elasticlunr(function () {
-  this.addField('body');
-  this.addField('title');
-  this.addField('url');
-  this.setRef('id');
-});
-
-// const handle_axios_error = function (err) {
-//
-//   if (err.response) {
-//     const custom_error = new Error(err.response.statusText || 'Internal server error');
-//     custom_error.status = err.response.status || 500;
-//     custom_error.description = err.response.data ? err.response.data.message : null;
-//     throw custom_error;
-//   }
-//   throw new Error(err);
-//
-// }
-// axios.interceptors.response.use(r => r, handle_axios_error);
 
 /**
  * Set `__static` path to static files in production
@@ -105,12 +86,12 @@ ipcMain.on('asynchronous-message', async (event, url) => {
   const $ = cheerio.load(html);
   const title = $('title').text();
   const doc = {
-    id: index.documentStore.length,
+    id: global.index.documentStore.length,
     body: h2p(html),
     title,
     url,
   };
-  index.addDoc(doc);
+  global.index.addDoc(doc);
   let links = getLinks({
     html,
     url,
@@ -134,29 +115,29 @@ ipcMain.on('asynchronous-message', async (event, url) => {
       const $ = cheerio.load(html);
       const title = $('title').text();
       const doc = {
-        id: index.documentStore.length,
+        id: global.index.documentStore.length,
         body: h2p(html),
         title,
         url,
       };
-      index.addDoc(doc);
+      global.index.addDoc(doc);
       resolve();
     });
   }));
 
   await saveDocuments();
 
-  event.sender.send('update-documents', CreateDocTreeService.createDocTree(index.documentStore.docs))
+  event.sender.send('update-documents', CreateDocTreeService.createDocTree(global.index.documentStore.docs))
 })
 
 ipcMain.on('search', (event, word) => {
-  let result = index.search(word, {
+  let result = global.index.search(word, {
     fields: {
       body: {boost: 1}
     }
   });
   result = result.map(r => {
-    const doc = index.documentStore.getDoc(r.ref);
+    const doc = global.index.documentStore.getDoc(r.ref);
     return Object.assign(r, {
       doc,
     });
@@ -166,9 +147,7 @@ ipcMain.on('search', (event, word) => {
 
 const saveDocuments = async () => {
   return new Promise((resolve, reject) => {
-    const docs = index.documentStore.toJSON();
-
-    storage.set('documents', docs, e => {
+    storage.set('documents', global.index.toJSON(), e => {
       if (e) {
         reject(e);
       } else {
@@ -180,24 +159,23 @@ const saveDocuments = async () => {
 
 const loadDocuments = async () => {
   return new Promise((resolve, reject) => {
-    storage.has('documents', (e, hasKye) => {
-      console.log('1')
+    storage.has('documents', (e, hasKey) => {
       if (e) {
         reject(e);
         return;
       }
 
-      if (hasKye) {
+      if (hasKey) {
         storage.get('documents', (e, docs) => {
           if (e) {
             reject(e);
           } else {
-            index.documentStore = elasticlunr.DocumentStore.load(docs);
-            resolve();
+            const index = elasticlunr.Index.load(docs);
+            resolve(index);
           }
         });
       } else {
-        resolve();
+        resolve(null);
       }
     })
   });
@@ -209,6 +187,16 @@ ipcMain.on('save-documents', async (event) => {
 })
 
 ipcMain.on('load-documents', async (event) => {
-  await loadDocuments();
+  let index = await loadDocuments()
+  if (index === null) {
+    index = elasticlunr(function () {
+      this.addField('body');
+      this.addField('title');
+      this.addField('url');
+      this.setRef('id');
+    });
+  }
+  global.index = index;
+
   event.sender.send('load-documents-end', CreateDocTreeService.createDocTree(index.documentStore.docs));
 })
