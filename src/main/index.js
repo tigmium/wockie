@@ -7,6 +7,7 @@ import ImportDocumentsService from '../renderer/services/ImportDocumentsService'
 import SearchDocumentsService from '../renderer/services/SearchDocumentsService';
 import SaveDocumentsService from '../renderer/services/SaveDocumentsService';
 import LoadDocumentsService from '../renderer/services/LoadDocumentsService';
+import InitializeIndexService from "../renderer/services/InitializeIndexService";
 
 
 /**
@@ -96,17 +97,9 @@ ipcMain.on('save-documents', async (event) => {
 })
 
 ipcMain.on('load-documents', async (event) => {
-  const service = new LoadDocumentsService(global.index);
-  let index = await service.loadDocuments()
-  if (index === null) {
-    index = elasticlunr(function () {
-      this.addField('body');
-      this.addField('title');
-      this.addField('url');
-      this.setRef('id');
-    });
-  }
+  const loadService = new LoadDocumentsService();
+  const initializeService = new InitializeIndexService(loadService);
+  const index = initializeService.initializeIndex();
   global.index = index;
-
   event.sender.send('load-documents-end', CreateDocTreeService.createDocTree(index.documentStore.docs));
 })
