@@ -1,14 +1,12 @@
 'use strict'
 
 import {app, BrowserWindow, ipcMain} from 'electron'
-import axios from 'axios'
-import h2p from 'html2plaintext'
 import elasticlunr from 'elasticlunr'
-import getLinks from 'html-links'
-import esr from 'escape-string-regexp'
-import cheerio from 'cheerio'
 import CreateDocTreeService from '../renderer/services/CreateDocTreeService'
-import storage from 'electron-json-storage'
+import ImportDocumentsService from '../renderer/services/ImportDocumentsService';
+import SearchDocumentsService from '../renderer/services/SearchDocumentsService';
+import SaveDocumentsService from '../renderer/services/SaveDocumentsService';
+import LoadDocumentsService from '../renderer/services/LoadDocumentsService';
 
 
 /**
@@ -76,118 +74,30 @@ app.on('ready', () => {
  */
 
 ipcMain.on('asynchronous-message', async (event, url) => {
-  event.sender.send('log', 'get web page: ' + url);
-  const resp = await axios({
-    method: 'get',
-    url: url,
-    responseType: 'text'
-  })
-  const html = resp.data;
-  const $ = cheerio.load(html);
-  const title = $('title').text();
-  const doc = {
-    id: global.index.documentStore.length,
-    body: h2p(html),
-    title,
-    url,
-  };
-  global.index.addDoc(doc);
-  let links = getLinks({
-    html,
-    url,
-  });
-  links = links.filter(link => {
-    const regexp = new RegExp('^' + esr(url));
-    return regexp.test(link.normalized);
-    // return true;
-  });
-  event.sender.send('log', links)
+  const importService = new ImportDocumentsService(global.index);
+  const saveService = new SaveDocumentsService(global.index);
 
-  await Promise.all(links.map(link => {
-    return new Promise(async (resolve, reject) => {
-      const url = link.normalized;
-      const resp = await axios({
-        method: 'get',
-        url: url,
-        responseType: 'text'
-      });
-      const html = resp.data;
-      const $ = cheerio.load(html);
-      const title = $('title').text();
-      const doc = {
-        id: global.index.documentStore.length,
-        body: h2p(html),
-        title,
-        url,
-      };
-      global.index.addDoc(doc);
-      resolve();
-    });
-  }));
-
-  await saveDocuments();
+  await importService.importDocuments(url);
+  await saveService.saveDocuments();
 
   event.sender.send('update-documents', CreateDocTreeService.createDocTree(global.index.documentStore.docs))
 })
 
 ipcMain.on('search', (event, word) => {
-  let result = global.index.search(word, {
-    fields: {
-      body: {boost: 1}
-    }
-  });
-  result = result.map(r => {
-    const doc = global.index.documentStore.getDoc(r.ref);
-    return Object.assign(r, {
-      doc,
-    });
-  })
+  const service = new SearchDocumentsService(global.index);
+  const result = service.searchDocuments(word);
   event.sender.send('search-end', result);
 })
 
-const saveDocuments = async () => {
-  return new Promise((resolve, reject) => {
-    storage.set('documents', global.index.toJSON(), e => {
-      if (e) {
-        reject(e);
-      } else {
-        resolve()
-      }
-    });
-  })
-}
-
-const loadDocuments = async () => {
-  return new Promise((resolve, reject) => {
-    storage.has('documents', (e, hasKey) => {
-      if (e) {
-        reject(e);
-        return;
-      }
-
-      if (hasKey) {
-        storage.get('documents', (e, docs) => {
-          if (e) {
-            reject(e);
-          } else {
-            const index = elasticlunr.Index.load(docs);
-            resolve(index);
-          }
-        });
-      } else {
-        resolve(null);
-      }
-    })
-  });
-}
-
 ipcMain.on('save-documents', async (event) => {
-  await saveDocuments();
+  // TODO 未使用のため削除
+  // await saveDocuments();
   event.sender.send('save-documents-end');
 })
 
 ipcMain.on('load-documents', async (event) => {
-  let index = await loadDocuments()
+  const service = new LoadDocumentsService(global.index);
+  let index = await service.loadDocuments()
   if (index === null) {
     index = elasticlunr(function () {
       this.addField('body');
