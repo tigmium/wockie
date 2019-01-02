@@ -18,5 +18,6 @@ describe('ImportDocumentsService.js', () => {
 
   it('aaa', async function () {
     await this.service.importDocuments('https://buefy.github.io/documentation');
+    const index = this.index;
   })
 })
