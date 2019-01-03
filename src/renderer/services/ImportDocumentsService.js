@@ -13,7 +13,7 @@ export default class {
   }
 
   async importDocuments(url) {
-    await this.fetchUrl(url, 2);
+    await this.fetchUrl(url, 4);
   }
 
   perform(name, arg) {
