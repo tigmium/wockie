@@ -1,7 +1,6 @@
 'use strict'
 
 import {app, BrowserWindow, ipcMain} from 'electron'
-import elasticlunr from 'elasticlunr'
 import CreateDocTreeService from '../renderer/services/CreateDocTreeService'
 import ImportDocumentsService from '../renderer/services/ImportDocumentsService';
 import SearchDocumentsService from '../renderer/services/SearchDocumentsService';
@@ -99,7 +98,7 @@ ipcMain.on('save-documents', async (event) => {
 ipcMain.on('load-documents', async (event) => {
   const loadService = new LoadDocumentsService();
   const initializeService = new InitializeIndexService(loadService);
-  const index = initializeService.initializeIndex();
+  const index = await initializeService.initializeIndex();
   global.index = index;
   event.sender.send('load-documents-end', CreateDocTreeService.createDocTree(index.documentStore.docs));
 })

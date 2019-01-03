@@ -1,49 +1,47 @@
 <template>
   <div id="wrapper">
-    <div class="columns">
-      <div class="column">
-        <b-collapse class="card" v-for="node in docTree" :key="node.domain" v-bind:open="false">
-          <div slot="trigger" slot-scope="props" class="card-header">
-            <p class="card-header-title">
-              {{node.domain}}
-            </p>
-            <a class="card-header-icon">
-              <b-icon
-                :icon="props.open ? 'menu-down' : 'menu-up'">
-              </b-icon>
-            </a>
-          </div>
-          <div class="card-content">
-            <div class="content">
-              <div v-for="doc in node.documents" :key="doc.id">
-                <div><a v-bind:alt="doc.url" v-on:click="e => onClickDocLink(e, doc)">{{doc.title}}</a></div>
-              </div>
+    <div id="doc-list">
+      <b-collapse class="card" v-for="node in docTree" :key="node.domain" v-bind:open="false">
+        <div slot="trigger" slot-scope="props" class="card-header">
+          <p class="card-header-title">
+            {{node.domain}}
+          </p>
+          <a class="card-header-icon">
+            <b-icon
+              :icon="props.open ? 'menu-down' : 'menu-up'">
+            </b-icon>
+          </a>
+        </div>
+        <div class="card-content">
+          <div class="content">
+            <div v-for="doc in node.documents" :key="doc.id">
+              <div><a v-bind:alt="doc.url" v-on:click="e => onClickDocLink(e, doc)">{{doc.title}}</a></div>
             </div>
           </div>
-        </b-collapse>
-      </div>
-
-      <div class="column">
-        <b-field>
-          <b-input placeholder="Search..." type="search" icon="magnify" v-model="url">
-          </b-input>
-          <p class="control">
-            <button class="button is-primary" v-on:click="onClickWget">Get Page</button>
-          </p>
-        </b-field>
-
-        <b-field>
-          <b-input placeholder="Search..." type="search" icon="magnify" v-model="word">
-          </b-input>
-          <p class="control">
-            <button class="button is-primary" v-on:click="onClickSearch">Search</button>
-          </p>
-        </b-field>
-
-        <div v-for="match in matches">
-          <div><a v-bind:alt="match.doc.url" v-on:click="e => onClickDocLink(e, match.doc)">{{match.doc.title}}</a></div>
-          <div>score: {{match.score}}</div>
         </div>
+      </b-collapse>
+    </div>
+
+    <div>
+      <b-field>
+        <b-input placeholder="Search..." type="search" icon="magnify" v-model="url">
+        </b-input>
+        <p class="control">
+          <button class="button is-info" v-on:click="onClickWget">Get Page</button>
+        </p>
+      </b-field>
+
+      <b-field>
+        <b-input placeholder="Search..." type="search" icon="magnify" v-model="word">
+        </b-input>
+        <p class="control">
+          <button class="button is-info" v-on:click="onClickSearch">Search</button>
+        </p>
+      </b-field>
+
+      <div v-for="match in matches">
+        <div><a v-bind:alt="match.doc.url" v-on:click="e => onClickDocLink(e, match.doc)">{{match.doc.title}}</a></div>
+        <div>score: {{match.score}}</div>
       </div>
     </div>
   </div>
@@ -113,7 +111,40 @@
 </script>
 
 <style lang="scss">
+  @import "../style/theme";
   @import "~bulma/sass/utilities/_all.sass";
   @import "~bulma/sass/grid/columns.sass";
-  @import "~bulma/sass/elements/button.sass";
+  @import "~bulma/sass/elements/_all.sass";
+  @import "~bulma/sass/components/_all.sass";
+
+  #doc-list {
+    width: 200px;
+    height: 100%;
+    overflow: scroll;
+  }
+
+  #wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  /*スクロールバー全体*/
+  ::-webkit-scrollbar {
+    width: 10px;
+    /*display:none;*/
+  }
+
+  /*スクロールバーの軌道*/
+  ::-webkit-scrollbar-track {
+    border-radius: 10px;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
+  }
+
+  /*スクロールバーの動く部分*/
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 50, .5);
+    border-radius: 10px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .3);
+  }
 </style>

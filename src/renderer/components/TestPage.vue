@@ -43,7 +43,8 @@
   }
 </script>
 
-<style>
+<style lang="scss">
+  @import "../style/theme";
   @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
 
   * {
@@ -55,14 +56,9 @@
   body { font-family: 'Source Sans Pro', sans-serif; }
 
   #wrapper {
-    background:
-      radial-gradient(
-        ellipse at top left,
-        rgba(255, 255, 255, 1) 40%,
-        rgba(229, 229, 229, .9) 100%
-      );
+    background: $background-color;
     height: 100vh;
-    padding: 60px 80px;
+    /*padding: 60px 80px;*/
     width: 100vw;
   }
 
