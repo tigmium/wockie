@@ -1,8 +1,8 @@
 import axios from "axios";
-import parseLinks from "html-links";
 import esr from "escape-string-regexp";
 import cheerio from "cheerio";
 import h2p from "html2plaintext";
+import {resolve} from 'url';
 
 const {PerformanceObserver, performance} = require('perf_hooks');
 
@@ -59,7 +59,7 @@ export default class {
       return;
     }
 
-    let links = await this.getLinks(url, html);
+    let links = this.getLinks(url, html);
     await Promise.all(links.map(async link => {
       await this.fetchUrl(link, max, curr + 1);
     }));
@@ -98,23 +98,22 @@ export default class {
 
   getLinks(url, html) {
     const end = this.perform('パース', url);
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        let links = parseLinks({
-          html,
-          url,
-        });
-        links = links.filter(link => {
-          const regexp = new RegExp('^' + esr(url));
-          return regexp.test(link.normalized);
-          // return true;
-        });
-        links = links.map(link => {
-          return link.normalized;
-        });
-        end();
-        resolve(links);
-      }, 0);
+    const $ = cheerio.load(html);
+    const atags = $('a');
+    let keys = Object.keys(atags);
+    keys = keys.filter((key) => {
+      const atag = atags[key];
+      return atag.attribs && atag.attribs.href;
     });
+    let links = keys.map((key) => {
+      const atag = atags[key];
+      return resolve(url, atag.attribs.href);
+    })
+    const regexp = new RegExp('^' + esr(url));
+    links = links.filter(link => {
+      return regexp.test(link);
+    });
+    end();
+    return links;
   }
 }
