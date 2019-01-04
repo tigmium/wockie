@@ -4,7 +4,7 @@
       <div class="header columns">
         <div class="column">ドキュメント一覧</div>
         <div class="column is-3">
-          <button class="button is-info" v-on:click="">＋</button>
+          <button class="button is-info" v-on:click="onClickAddDoc">＋</button>
         </div>
       </div>
       <div class="content">
@@ -52,17 +52,20 @@
         <div>score: {{match.score}}</div>
       </div>
     </div>
+
+    <import-dialog ref="importDialog"></import-dialog>
   </div>
 </template>
 
 <script>
   import SystemInformation from './LandingPage/SystemInformation'
   import {ipcRenderer, shell} from 'electron'
+  import ImportDialog from "./ImportDialog";
   // import console from 'console'
 
   export default {
     name: 'landing-page',
-    components: {SystemInformation},
+    components: {ImportDialog, SystemInformation},
     mounted() {
       ipcRenderer.on('asynchronous-reply', this.onIpcAsynchronousReply.bind(this));
       ipcRenderer.on('search-end', this.onIpcSearchEnd.bind(this));
@@ -96,6 +99,9 @@
       onClickDocLink(e, doc) {
         shell.openExternal(doc.url);
       },
+      onClickAddDoc() {
+        this.$refs.importDialog.open();
+      },
       onIpcAsynchronousReply(event, arg) {
         console.log(arg) // pong
       },
@@ -120,10 +126,10 @@
 
 <style lang="scss">
   @import "../style/theme";
-  @import "~bulma/sass/utilities/_all.sass";
   @import "~bulma/sass/grid/columns.sass";
-  @import "~bulma/sass/elements/_all.sass";
-  @import "~bulma/sass/components/_all.sass";
+  @import "~bulma/sass/elements/button.sass";
+  @import "~bulma/sass/elements/form.sass";
+  @import "~bulma/sass/components/card.sass";
 
   #doc-list {
     width: 300px;
@@ -133,7 +139,6 @@
 
     .header {
       border-bottom: $border-color solid 1px;
-      height: 50px;
     }
 
     .card-header, .collapse-content {

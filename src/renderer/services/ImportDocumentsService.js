@@ -12,8 +12,8 @@ export default class {
     this.no = 0;
   }
 
-  async importDocuments(url) {
-    await this.fetchUrl(url, 1);
+  async importDocuments(url, maxDepth = 1) {
+    await this.fetchUrl(url, maxDepth);
   }
 
   perform(name, arg) {
@@ -43,17 +43,23 @@ export default class {
     });
   }
 
+  isFirstFetch(curr) {
+    return curr === 0;
+  }
+
   async fetchUrl(url, max, curr = 0) {
-    if (this.isAddedUrl(url)) {
+    if (!this.isFirstFetch(curr) && this.isAddedUrl(url)) {
       console.log('Skip: ' + url);
       return;
     }
 
     const html = await this.getPage(url);
 
-    const doc = this.html2doc(url, html);
-    this.addDoc(doc);
-    console.log('Add: ' + url);
+    if (!this.isFirstFetch(curr) || !this.isAddedUrl(url)) {
+      const doc = this.html2doc(url, html);
+      this.addDoc(doc);
+      console.log('Add: ' + url);
+    }
 
     if (curr >= max) {
       return;

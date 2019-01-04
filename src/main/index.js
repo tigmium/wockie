@@ -73,11 +73,11 @@ app.on('ready', () => {
 })
  */
 
-ipcMain.on('asynchronous-message', async (event, url) => {
+ipcMain.on('asynchronous-message', async (event, url, maxDepth) => {
   const importService = new ImportDocumentsService(global.index);
   const saveService = new SaveDocumentsService(global.index);
 
-  await importService.importDocuments(url);
+  await importService.importDocuments(url, maxDepth);
   await saveService.saveDocuments();
 
   event.sender.send('update-documents', CreateDocTreeService.createDocTree(global.index.documentStore.docs))
