@@ -32,14 +32,6 @@
 
     <div id="search-area">
       <b-field>
-        <b-input placeholder="Search..." type="search" icon="magnify" v-model="url">
-        </b-input>
-        <p class="control">
-          <button class="button is-info" v-on:click="onClickWget">Get Page</button>
-        </p>
-      </b-field>
-
-      <b-field>
         <b-input placeholder="Search..." type="search" icon="magnify" v-model="word">
         </b-input>
         <p class="control">
@@ -56,7 +48,8 @@
       </div>
     </div>
 
-    <import-dialog ref="importDialog"></import-dialog>
+    <import-dialog ref="importDialog" v-bind:import-progress-dialog="$refs.importProgressDialog"></import-dialog>
+    <import-progress-dialog ref="importProgressDialog"></import-progress-dialog>
   </div>
 </template>
 
@@ -64,11 +57,12 @@
   import SystemInformation from './LandingPage/SystemInformation'
   import {ipcRenderer, shell} from 'electron'
   import ImportDialog from "./ImportDialog";
+  import ImportProgressDialog from "./ImportProgressDialog";
   // import console from 'console'
 
   export default {
     name: 'landing-page',
-    components: {ImportDialog, SystemInformation},
+    components: {ImportProgressDialog, ImportDialog, SystemInformation},
     mounted() {
       ipcRenderer.on('asynchronous-reply', this.onIpcAsynchronousReply.bind(this));
       ipcRenderer.on('search-end', this.onIpcSearchEnd.bind(this));
@@ -81,7 +75,6 @@
     },
     data: () => {
       return {
-        url: 'https://buefy.github.io/documentation/',
         word: 'test',
         docTree: [],
         matches: [],
@@ -91,11 +84,6 @@
       open(link) {
         this.$electron.shell.openExternal(link)
       },
-      onClickWget() {
-        console.log('on click!!!!!')
-        ipcRenderer.send('asynchronous-message', this.url)
-      },
-
       onClickSearch() {
         ipcRenderer.send('search', this.word)
       },

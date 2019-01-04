@@ -36,6 +36,7 @@
   export default {
     name: 'import-dialog',
     components: {SystemInformation},
+    props: ['importProgressDialog'],
     mounted() {
       // ipcRenderer.on('asynchronous-reply', this.onIpcAsynchronousReply.bind(this));
 
@@ -44,7 +45,7 @@
     data: () => {
       return {
         active: false,
-        url: '',
+        url: 'https://buefy.github.io/documentation/',
         depth: 1,
       }
     },
@@ -54,6 +55,8 @@
       },
       onClickImport() {
         ipcRenderer.send('asynchronous-message', this.url, this.depth);
+        this.$set(this, 'active', false);
+        this.importProgressDialog.open();
       }
     }
   }

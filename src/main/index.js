@@ -77,10 +77,13 @@ ipcMain.on('asynchronous-message', async (event, url, maxDepth) => {
   const importService = new ImportDocumentsService(global.index);
   const saveService = new SaveDocumentsService(global.index);
 
-  await importService.importDocuments(url, maxDepth);
+  await importService.importDocuments(url, maxDepth, (progress) => {
+    event.sender.send('update-import-progress', progress);
+  });
   await saveService.saveDocuments();
 
-  event.sender.send('update-documents', CreateDocTreeService.createDocTree(global.index.documentStore.docs))
+  event.sender.send('update-documents', CreateDocTreeService.createDocTree(global.index.documentStore.docs));
+  event.sender.send('finish-import-progress');
 })
 
 ipcMain.on('search', (event, word) => {

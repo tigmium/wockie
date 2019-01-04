@@ -10,9 +10,11 @@ export default class {
   constructor(index) {
     this.index = index;
     this.no = 0;
+    this.progress = [];
   }
 
-  async importDocuments(url, maxDepth = 1) {
+  async importDocuments(url, maxDepth, cb) {
+    this.progressCallback = cb;
     await this.fetchUrl(url, maxDepth);
   }
 
@@ -47,9 +49,19 @@ export default class {
     return curr === 0;
   }
 
+  addProgress(url, state) {
+    this.progress.push({
+      'title': '',
+      url,
+      state,
+    });
+    this.progressCallback(this.progress);
+  }
+
   async fetchUrl(url, max, curr = 0) {
     if (!this.isFirstFetch(curr) && this.isAddedUrl(url)) {
       console.log('Skip: ' + url);
+      this.addProgress(url, 'Skip');
       return;
     }
 
@@ -59,6 +71,10 @@ export default class {
       const doc = this.html2doc(url, html);
       this.addDoc(doc);
       console.log('Add: ' + url);
+      this.addProgress(url, 'Add');
+    } else {
+      console.log('Skip: ' + url);
+      this.addProgress(url, 'Skip');
     }
 
     if (curr >= max) {
