@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <div>
+    <div id="search-area">
       <b-field>
         <b-input placeholder="Search..." type="search" icon="magnify" v-model="url">
         </b-input>
@@ -47,9 +47,12 @@
         </p>
       </b-field>
 
-      <div v-for="match in matches">
-        <div><a v-bind:alt="match.doc.url" v-on:click="e => onClickDocLink(e, match.doc)">{{match.doc.title}}</a></div>
-        <div>score: {{match.score}}</div>
+      <div id="result">
+        <div v-for="match in matches">
+          <div><a v-bind:alt="match.doc.url" v-on:click="e => onClickDocLink(e, match.doc)">{{match.doc.title}}</a>
+          </div>
+          <div>score: {{match.score}}</div>
+        </div>
       </div>
     </div>
 
@@ -143,6 +146,15 @@
 
     .card-header, .collapse-content {
       border-bottom: $border-color solid 1px;
+    }
+  }
+
+  #search-area {
+    height: 100vh;
+
+    #result {
+      overflow: scroll;
+      height: 100%;
     }
   }
 
