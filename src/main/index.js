@@ -73,11 +73,11 @@ app.on('ready', () => {
 })
  */
 
-ipcMain.on('asynchronous-message', async (event, url, maxDepth) => {
+ipcMain.on('asynchronous-message', async (event, url, maxDepth, filter) => {
   const importService = new ImportDocumentsService(global.index);
   const saveService = new SaveDocumentsService(global.index);
 
-  await importService.importDocuments(url, maxDepth, (progress) => {
+  await importService.importDocuments(url, maxDepth, filter, (progress) => {
     event.sender.send('update-import-progress', progress);
   });
   await saveService.saveDocuments();

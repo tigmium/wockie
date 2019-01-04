@@ -14,11 +14,15 @@
       <div class="card-content">
         <div class="content">
           <b-field label="URL">
-            <b-input type="url" v-model="url"></b-input>
+            <b-input type="url" v-model="url" @change.native="onChangeURL"></b-input>
           </b-field>
           <b-field label="Max depth">
             <b-input placeholder="Number" type="number" min="0" v-model="depth">
             </b-input>
+          </b-field>
+          <b-checkbox v-model="filterEnabled">URL filterを変更する</b-checkbox>
+          <b-field>
+            <b-input type="url" v-model="filter" v-bind:disabled="!filterEnabled"></b-input>
           </b-field>
         </div>
       </div>
@@ -47,6 +51,8 @@
         active: false,
         url: 'https://buefy.github.io/documentation/',
         depth: 1,
+        filter: 'https://buefy.github.io/documentation/',
+        filterEnabled: false,
       }
     },
     methods: {
@@ -54,10 +60,16 @@
         this.$set(this, 'active', true);
       },
       onClickImport() {
-        ipcRenderer.send('asynchronous-message', this.url, this.depth);
+        const filter = this.filterEnabled ? this.filter : this.url;
+        ipcRenderer.send('asynchronous-message', this.url, this.depth, filter);
         this.$set(this, 'active', false);
         this.importProgressDialog.open();
-      }
+      },
+      onChangeURL(e) {
+        const url = e.target.value;
+        console.log(url);
+        this.$set(this, 'filter', url);
+      },
     }
   }
 </script>

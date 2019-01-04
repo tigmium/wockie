@@ -11,10 +11,12 @@ export default class {
     this.index = index;
     this.no = 0;
     this.progress = [];
+    this.filter = null;
   }
 
-  async importDocuments(url, maxDepth, cb) {
+  async importDocuments(url, maxDepth, filter, cb) {
     this.progressCallback = cb;
+    this.filter = filter;
     await this.fetchUrl(url, maxDepth);
   }
 
@@ -130,8 +132,8 @@ export default class {
     let links = keys.map((key) => {
       const atag = atags[key];
       return resolve(url, atag.attribs.href);
-    })
-    const regexp = new RegExp('^' + esr(url));
+    });
+    const regexp = new RegExp('^' + esr(this.filter));
     links = links.filter(link => {
       return regexp.test(link);
     });
