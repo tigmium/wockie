@@ -1,25 +1,33 @@
 <template>
   <div id="wrapper">
     <div id="doc-list">
-      <b-collapse class="card" v-for="node in docTree" :key="node.domain" v-bind:open="false">
-        <div slot="trigger" slot-scope="props" class="card-header">
-          <p class="card-header-title">
-            {{node.domain}}
-          </p>
-          <a class="card-header-icon">
-            <b-icon
-              :icon="props.open ? 'menu-down' : 'menu-up'">
-            </b-icon>
-          </a>
+      <div class="header columns">
+        <div class="column">ドキュメント一覧</div>
+        <div class="column is-3">
+          <button class="button is-info" v-on:click="">＋</button>
         </div>
-        <div class="card-content">
-          <div class="content">
-            <div v-for="doc in node.documents" :key="doc.id">
-              <div><a v-bind:alt="doc.url" v-on:click="e => onClickDocLink(e, doc)">{{doc.title}}</a></div>
+      </div>
+      <div class="content">
+        <b-collapse class="card" v-for="node in docTree" :key="node.domain" v-bind:open="false">
+          <div slot="trigger" slot-scope="props" class="card-header">
+            <p class="card-header-title">
+              {{node.domain}}
+            </p>
+            <a class="card-header-icon">
+              <b-icon
+                :icon="props.open ? 'menu-down' : 'menu-up'">
+              </b-icon>
+            </a>
+          </div>
+          <div class="card-content">
+            <div class="content">
+              <div v-for="doc in node.documents" :key="doc.id">
+                <div><a v-bind:alt="doc.url" v-on:click="e => onClickDocLink(e, doc)">{{doc.title}}</a></div>
+              </div>
             </div>
           </div>
-        </div>
-      </b-collapse>
+        </b-collapse>
+      </div>
     </div>
 
     <div>
@@ -118,33 +126,24 @@
   @import "~bulma/sass/components/_all.sass";
 
   #doc-list {
-    width: 200px;
+    width: 300px;
     height: 100%;
     overflow: scroll;
+    border-right: $border-color solid 1px;
+
+    .header {
+      border-bottom: $border-color solid 1px;
+      height: 50px;
+    }
+
+    .card-header, .collapse-content {
+      border-bottom: $border-color solid 1px;
+    }
   }
 
   #wrapper {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-  }
-
-  /*スクロールバー全体*/
-  ::-webkit-scrollbar {
-    width: 10px;
-    /*display:none;*/
-  }
-
-  /*スクロールバーの軌道*/
-  ::-webkit-scrollbar-track {
-    border-radius: 10px;
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, .1);
-  }
-
-  /*スクロールバーの動く部分*/
-  ::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 50, .5);
-    border-radius: 10px;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, .3);
   }
 </style>
