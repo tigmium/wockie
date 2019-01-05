@@ -40,13 +40,15 @@
     </div>
 
     <div id="search-area" class="column is-9">
-      <b-field id="search-form">
-        <b-input placeholder="Search..." type="search" icon="magnify" v-model="word">
-        </b-input>
-        <p class="control">
-          <button class="button is-primary" v-on:click="onClickSearch">Search</button>
-        </p>
-      </b-field>
+      <div id="search-form">
+        <b-field>
+          <b-input placeholder="Search..." type="search" icon="magnify" v-model="word">
+          </b-input>
+          <p class="control">
+            <button class="button is-primary" v-on:click="onClickSearch">Search</button>
+          </p>
+        </b-field>
+      </div>
 
       <div id="result-area">
         <div v-for="match in matches" class="result-item">
@@ -253,17 +255,26 @@
   }
 
   #search-area {
+    position: relative;
     height: 100vh;
 
     #search-form {
+      position: absolute;
+      z-index: 2;
       padding-left: 10px;
       padding-top: 10px;
+      width: 100%;
+      height: 58px;
+      border-bottom: $border-color solid 1px;
+      background-color: $bg-color-1;
     }
 
     #result-area {
+      position: absolute;
+      z-index: 1;
+      padding-top: 58px;
       overflow: scroll;
-      height: 100%;
-      border-top: $border-color solid 1px;
+      height: 100vh;
 
       .result-item {
         padding: 10px;
