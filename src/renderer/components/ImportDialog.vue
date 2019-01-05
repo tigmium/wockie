@@ -5,11 +5,6 @@
         <p class="card-header-title">
           インポート
         </p>
-        <a href="#" class="card-header-icon" aria-label="more options">
-          <span class="icon">
-            <i class="fas fa-angle-down" aria-hidden="true"></i>
-          </span>
-        </a>
       </header>
       <div class="card-content">
         <div class="content">
@@ -24,11 +19,14 @@
           <b-field>
             <b-input type="url" v-model="filter" v-bind:disabled="!filterEnabled"></b-input>
           </b-field>
+          <a class="" v-on:click="onClickImport">
+            <button class="button is-primary is-fullwidth">
+              <b-icon pack="fas" icon="play" size="is-small" style="margin-right: 5px"></b-icon>
+              読み込み開始
+            </button>
+          </a>
         </div>
       </div>
-      <footer class="card-footer">
-        <a href="#" class="card-footer-item" v-on:click="onClickImport">読み込み開始</a>
-      </footer>
     </div>
   </b-modal>
 </template>
@@ -77,6 +75,11 @@
 <style lang="scss">
   @import "../style/theme";
   @import "~bulma/sass/components/modal.sass";
+  @import "~bulma/sass/elements/form.sass";
+
+  .card-header {
+    border-bottom: $border-color solid 1px;
+  }
 
   .modal-content {
     border: 1px solid $border-color;
