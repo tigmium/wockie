@@ -4,9 +4,13 @@
 $yellow: hsl(48, 100%, 67%);
 $red: hsl(348, 100%, 61%);
 
-$primary: #278ea5;
-$info: #1F4287;
-$success: #21e6c1;
+$theme-color-1: #21e6c1;
+$theme-color-2: #278ea5;
+$theme-color-3: #1F4287;
+
+$primary: $theme-color-2;
+$info: $theme-color-3;
+$success: $theme-color-1;
 $warning: $yellow;
 $danger: $red;
 
@@ -16,6 +20,18 @@ $text-color-main: #f9f9f9;
 $text-color-sub: #939395;
 
 $border-color: rgb(68, 68, 68);
+
+$link: $theme-color-2;
+$link-hover: $theme-color-1;
+
+/**
+ * elements
+ */
+
+/**
+ * Layout
+ */
+$column-gap: 0;
 
 /*
  * Components
@@ -33,7 +49,7 @@ $card-shadow: none;
 $card-header-background-color: $background-color;
 $card-header-color: $text-color-sub;
 //$card-header-shadow: 0 1px 2px rgba($black, 0.1) !default
-//$card-header-weight: $weight-bold !default
+$card-header-weight: 400;
 
 $card-content-background-color: $background-color;
 
@@ -60,3 +76,4 @@ $card-content-background-color: $background-color;
 }
 
 @import "~bulma/sass/utilities/_all.sass";
+@import "~bulma/sass/base/_all.sass";

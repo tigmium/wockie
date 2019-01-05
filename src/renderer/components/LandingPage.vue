@@ -2,16 +2,25 @@
   <div id="wrapper">
     <div id="doc-list">
       <div class="header columns">
-        <div class="column">ドキュメント一覧</div>
-        <div class="column is-3">
-          <button class="button is-info" v-on:click="onClickAddDoc">＋</button>
+        <div class="column">
+          <h2>
+            <b-icon pack="fas" icon="book" size="is-small"></b-icon>
+            ドキュメント一覧
+          </h2>
+        </div>
+        <div class="column is-3" id="add-doc">
+          <a v-on:click="onClickAddDoc">
+            <b-icon pack="fas" icon="plus-circle" size="is-big"></b-icon>
+          </a>
         </div>
       </div>
+
       <div class="content">
         <b-collapse class="card" v-for="node in docTree" :key="node.domain" v-bind:open="false">
           <div slot="trigger" slot-scope="props" class="card-header">
             <p class="card-header-title">
-              {{node.domain}}
+              <b-icon pack="far" icon="dot-circle" size="is-small"></b-icon>
+              <span class="text">{{node.domain}}</span>
             </p>
             <a class="card-header-icon">
               <b-icon
@@ -31,20 +40,22 @@
     </div>
 
     <div id="search-area">
-      <b-field>
+      <b-field id="search-form">
         <b-input placeholder="Search..." type="search" icon="magnify" v-model="word">
         </b-input>
         <p class="control">
-          <button class="button is-info" v-on:click="onClickSearch">Search</button>
+          <button class="button is-primary" v-on:click="onClickSearch">Search</button>
         </p>
       </b-field>
 
-      <div id="result">
-        <div v-for="match in matches">
+      <div id="result-area">
+        <div v-for="match in matches" class="result-item">
           <div><a v-bind:alt="match.doc.url" v-on:click="e => onClickDocLink(e, match.doc)">{{match.doc.title}}</a>
           </div>
-          <div>
-            <pre v-html="grep(match.doc.body)"></pre>
+          <div class="columns">
+            <div class="column">
+              <pre v-html="grep(match.doc.body)"></pre>
+            </div>
           </div>
           <div>score: {{match.score}}</div>
         </div>
@@ -176,6 +187,10 @@
   @import "~bulma/sass/elements/form.sass";
   @import "~bulma/sass/components/card.sass";
 
+  #wrapper {
+    height: 100vh;
+  }
+
   #doc-list {
     width: 300px;
     height: 100%;
@@ -184,19 +199,63 @@
 
     .header {
       border-bottom: $border-color solid 1px;
+      margin-bottom: 0;
+
+      column {
+        height: 50px;
+      }
+
+      h2 {
+        height: 50px;
+        line-height: 50px;
+        margin-left: 10px;
+      }
+
+      #add-doc {
+        height: 50px;
+        line-height: 50px;
+        text-align: right;
+        margin-right: 10px;
+        cursor: pointer;
+      }
     }
 
     .card-header, .collapse-content {
       border-bottom: $border-color solid 1px;
+
+      .card-header-title {
+        margin-bottom: 0;
+
+        i {
+          padding-top: 2px;
+        }
+
+        .text {
+          margin-left: 8px;
+        }
+      }
     }
   }
 
   #search-area {
     height: 100vh;
 
-    #result {
+    #search-form {
+      padding-left: 10px;
+      padding-top: 10px;
+    }
+
+    #result-area {
       overflow: scroll;
       height: 100%;
+      border-top: $border-color solid 1px;
+
+      .result-item {
+        padding-left: 10px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border-bottom: $border-color solid 1px;
+      }
 
       pre {
         width: 400px;
