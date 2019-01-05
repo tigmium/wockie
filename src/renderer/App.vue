@@ -14,7 +14,7 @@
   @import "style/theme";
 
   #app {
-    background: $background-color;
+    background: $bg-color-1;
     color: $text-color-sub;
     height: 100vh;
     /*padding: 60px 80px;*/

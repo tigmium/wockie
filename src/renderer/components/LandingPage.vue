@@ -1,6 +1,6 @@
 <template>
-  <div id="wrapper">
-    <div id="doc-list">
+  <div id="wrapper" class="columns">
+    <div id="doc-list" class="column">
       <div class="header columns">
         <div class="column">
           <h2>
@@ -30,7 +30,7 @@
           </div>
           <div class="card-content">
             <div class="content">
-              <div v-for="doc in node.documents" :key="doc.id">
+              <div v-for="doc in node.documents" :key="doc.id" class="doc-item">
                 <div><a v-bind:alt="doc.url" v-on:click="e => onClickDocLink(e, doc)">{{doc.title}}</a></div>
               </div>
             </div>
@@ -39,7 +39,7 @@
       </div>
     </div>
 
-    <div id="search-area">
+    <div id="search-area" class="column is-9">
       <b-field id="search-form">
         <b-input placeholder="Search..." type="search" icon="magnify" v-model="word">
         </b-input>
@@ -52,8 +52,8 @@
         <div v-for="match in matches" class="result-item">
           <div><a v-bind:alt="match.doc.url" v-on:click="e => onClickDocLink(e, match.doc)">{{match.doc.title}}</a>
           </div>
-          <div class="columns">
-            <div class="column">
+          <div class="columns match-text-area">
+            <div class="column is-12">
               <pre v-html="grep(match.doc.body)"></pre>
             </div>
           </div>
@@ -192,8 +192,6 @@
   }
 
   #doc-list {
-    width: 300px;
-    height: 100%;
     overflow: scroll;
     border-right: $border-color solid 1px;
 
@@ -234,6 +232,23 @@
           margin-left: 8px;
         }
       }
+
+      .card-content {
+        padding: 10px;
+
+        .doc-item:not(:last-child) {
+          border-bottom: $border-color solid 1px;
+          padding: 5px 0;
+        }
+
+        .doc-item:last-child {
+          padding-bottom: 0;
+        }
+
+        .doc-item:first-child {
+          padding-top: 0;
+        }
+      }
     }
   }
 
@@ -251,14 +266,20 @@
       border-top: $border-color solid 1px;
 
       .result-item {
-        padding-left: 10px;
-        padding-top: 10px;
-        padding-bottom: 10px;
+        padding: 10px;
         border-bottom: $border-color solid 1px;
       }
 
+      .match-text-area {
+        margin-top: 8px;
+        margin-bottom: 8px;
+      }
+
       pre {
-        width: 400px;
+        padding: 10px;
+        background-color: $bg-color-2;
+        border: $border-color solid 1px;
+        color: $text-color-sub;
       }
     }
   }

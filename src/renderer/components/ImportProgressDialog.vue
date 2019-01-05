@@ -76,7 +76,7 @@
 
   .modal-content {
     border: 1px solid $border-color;
-    background-color: $background-color;
+    background-color: $bg-color-1;
     color: $text-color-sub;
   }
 
