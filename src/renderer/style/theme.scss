@@ -33,7 +33,12 @@ $radius-large: 3px;
  * table
  */
 $table-color: $text-color-sub;
-$table-background-color: $bg-color-1;
+$table-background-color: $bg-color-2;
+
+$table-cell-border: 1px solid $border-color;
+
+$table-head-cell-border-width: 0 0 2px;
+$table-head-cell-color: $text-color-sub;
 
 /**
  * form

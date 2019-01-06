@@ -1,16 +1,24 @@
 <template>
-  <b-modal :active.sync="active" v-bind:canCancel="false">
+  <b-modal id="import-progress-dialog" :active.sync="active" v-bind:canCancel="false">
     <div class="card">
       <header class="card-header">
         <p class="card-header-title">
-          <span v-if="!finished">インポート中</span>
-          <span v-if="finished">インポート完了</span>
+          <span v-if="!finished">
+            <b-icon pack="fas" icon="spinner" size="is-small" class="fa-spin" style="margin-right: 5px"></b-icon>
+            インポート中
+          </span>
+          <span v-if="finished">
+            <b-icon pack="fas" icon="check-square" size="is-small" type="is-success" style="margin-right: 5px"></b-icon>
+            インポート完了
+          </span>
         </p>
       </header>
       <div class="card-content">
         <b-table id="import-progress" :columns="columns" :data="progress"></b-table>
-        <a class="button is-loading is-medium" v-if="!finished" disabled>インポート中</a>
-        <a class="button is-success is-medium is-fullwidth" v-if="finished" v-on:click="onClickFinish">完了</a>
+        <div id="footer-button">
+          <a class="button is-loading is-medium is-fullwidth" v-if="!finished" disabled>インポート中</a>
+          <a class="button is-success is-medium is-fullwidth" v-if="finished" v-on:click="onClickFinish">完了</a>
+        </div>
       </div>
     </div>
   </b-modal>
@@ -65,24 +73,35 @@
   }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
   @import "../style/theme";
   @import "~bulma/sass/components/modal.sass";
   @import "~bulma/sass/components/card.sass";
   @import "~bulma/sass/elements/table";
 
-  .modal-content {
-    border: 1px solid $border-color;
-    background-color: $bg-color-1;
-    color: $text-color-sub;
+  #import-progress-dialog {
+    .modal-content {
+      border: 1px solid $border-color;
+      background-color: $bg-color-1;
+      color: $text-color-sub;
 
-    .card-content {
-      padding: 0 !important;
+      .card-content {
+        padding: 0 !important;
+      }
     }
-  }
 
-  #import-progress {
-    overflow: scroll;
-    height: 300px;
+    #import-progress {
+      overflow: scroll;
+      height: 300px;
+      border-bottom: $border-color solid 1px;
+
+      .table {
+        border: none;
+      }
+    }
+
+    #footer-button {
+      margin: 10px;
+    }
   }
 </style>
