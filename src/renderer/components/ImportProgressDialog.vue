@@ -6,11 +6,6 @@
           <span v-if="!finished">インポート中</span>
           <span v-if="finished">インポート完了</span>
         </p>
-        <a href="#" class="card-header-icon" aria-label="more options">
-          <span class="icon">
-            <i class="fas fa-angle-down" aria-hidden="true"></i>
-          </span>
-        </a>
       </header>
       <div class="card-content">
         <b-table id="import-progress" :columns="columns" :data="progress"></b-table>
@@ -70,14 +65,20 @@
   }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
   @import "../style/theme";
   @import "~bulma/sass/components/modal.sass";
+  @import "~bulma/sass/components/card.sass";
+  @import "~bulma/sass/elements/table";
 
   .modal-content {
     border: 1px solid $border-color;
     background-color: $bg-color-1;
     color: $text-color-sub;
+
+    .card-content {
+      padding: 0 !important;
+    }
   }
 
   #import-progress {
