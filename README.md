@@ -1,28 +1,12 @@
-# my-project
+# Wockie
 
-> An electron-vue project
+Wockie is web documents searcher.
 
-#### Build Setup
+Recently, the frequency of reading documents on the web such as Installation, Tutorial, Api reference, Issue, etc... is increasing.
+However, the search function of the document on the web is entrusted to the implementation of the site, also the interface is not unified, it is inconvenient.
+By using Wockie, you can quickly access document with specified keywords.
 
-``` bash
-# install dependencies
-npm install
+# Feature
 
-# serve with hot reload at localhost:9080
-npm run dev
-
-# build electron application for production
-npm run build
-
-# run unit & end-to-end tests
-npm test
-
-
-# lint all JS/Vue component files in `src/`
-npm run lint
-
-```
-
----
-
-This project was generated with [electron-vue](https://github.com/SimulatedGREG/electron-vue)@[8fae476](https://github.com/SimulatedGREG/electron-vue/tree/8fae4763e9d225d3691b627e83b9e09b56f6c935) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about the original structure can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).
+Recursively import documents on the web to local and cache them.
+Quick full text search from imported documents.
