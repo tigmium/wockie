@@ -8,5 +8,26 @@ By using Wockie, you can quickly access document with specified keywords.
 
 # Feature
 
-Recursively import documents on the web to local and cache them.
-Quick full text search from imported documents.
+* Recursively import documents on the web to local and cache them.
+* Quick full text search from imported documents.
+
+# Demo
+
+// TODO
+
+# Usage
+
+// TODO
+
+# Install
+
+// TODO
+
+# Build
+
+```
+npm install
+npm run dev
+```
+
+# 
