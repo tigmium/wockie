@@ -1,7 +1,7 @@
 {
-  "name": "my-project",
+  "name": "wockie",
   "version": "0.0.1",
-  "author": "kunita <kunita@waltsinc.jp>",
+  "author": "example@example.com",
   "description": "An electron-vue project",
   "license": null,
   "main": "./dist/electron/main.js",
@@ -22,8 +22,8 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "my-project",
-    "appId": "com.example.yourapp",
+    "productName": "wockie",
+    "appId": "com.example.wockie",
     "directories": {
       "output": "build"
     },
