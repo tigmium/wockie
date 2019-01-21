@@ -3,6 +3,7 @@ import esr from "escape-string-regexp";
 import cheerio from "cheerio";
 import h2p from "html2plaintext";
 import {resolve} from 'url';
+import Url from "url-parse";
 
 const {PerformanceObserver, performance} = require('perf_hooks');
 
@@ -12,12 +13,31 @@ export default class {
     this.no = 0;
     this.progress = [];
     this.filter = null;
+    this.addedPaths = [];
   }
 
   async importDocuments(url, maxDepth, filter, cb) {
     this.progressCallback = cb;
     this.filter = filter;
+    this.initAddedPaths();
     await this.fetchUrl(url, maxDepth);
+  }
+
+  initAddedPaths() {
+    const regexp = new RegExp('^' + esr(this.filter));
+    const docs = this.index.documentStore.docs;
+    const refs = Object.keys(docs).filter(key => {
+      return regexp.test(docs[key].url);
+    });
+    for (let ref in refs) {
+      const path = this.extractPath(docs[ref].url);
+      this.addedPaths.push(path);
+    }
+  }
+
+  extractPath(url) {
+    const info = new Url(url);
+    return info.origin + info.pathname;
   }
 
   perform(name, arg) {
@@ -57,11 +77,13 @@ export default class {
       url,
       state,
     });
-    this.progressCallback(this.progress);
+    if (this.progressCallback) {
+      this.progressCallback(this.progress);
+    }
   }
 
   async fetchUrl(url, max, curr = 0) {
-    if (!this.isFirstFetch(curr) && this.isAddedUrl(url)) {
+    if (!this.isFirstFetch(curr) && this.isAddedPath(url)) {
       console.log('Skip: ' + url);
       this.addProgress(url, 'Skip');
       return;
@@ -69,7 +91,7 @@ export default class {
 
     const html = await this.getPage(url);
 
-    if (!this.isFirstFetch(curr) || !this.isAddedUrl(url)) {
+    if (!this.isFirstFetch(curr) || !this.isAddedPath(url)) {
       const doc = this.html2doc(url, html);
       this.addDoc(doc);
       console.log('Add: ' + url);
@@ -103,21 +125,21 @@ export default class {
     };
   }
 
+  addPath(url) {
+    const path = this.extractPath(url);
+    this.addedPaths.push(path);
+  }
+
   addDoc(doc) {
     const end = this.perform('ドキュメント追加', '');
     this.index.addDoc(doc);
+    this.addPath(doc.url);
     end();
   }
 
-  isAddedUrl(url) {
-    const r = this.index.search(url, {
-      fields: {
-        title: {boost: 0},
-        body: {boost: 0},
-        url: {boost: 1}
-      }
-    });
-    return r.length > 0;
+  isAddedPath(url) {
+    const path = this.extractPath(url);
+    return this.addedPaths.includes(path);
   }
 
   getLinks(url, html) {
