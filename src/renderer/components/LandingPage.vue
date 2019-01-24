@@ -56,7 +56,7 @@
           </div>
           <div class="columns match-text-area">
             <div class="column is-12">
-              <pre v-html="grep(match.doc.body)"></pre>
+              <pre v-html="match.highlight"></pre>
             </div>
           </div>
           <div>score: {{match.score}}</div>
@@ -74,7 +74,6 @@
   import {ipcRenderer, shell} from 'electron'
   import ImportDialog from "./ImportDialog";
   import ImportProgressDialog from "./ImportProgressDialog";
-  import esr from "escape-string-regexp";
 
   export default {
     name: 'landing-page',
@@ -127,57 +126,6 @@
       onIpcLoadDocumentsEnd(event, docTree) {
         this.$set(this, 'docTree', docTree);
       },
-      grep(body) {
-        const reg = new RegExp("(" + esr(this.word) + ")", "i");
-        const highlight = '<span style="background-color: yellow">$1</span>';
-        const match = reg.exec(body);
-        if (match) {
-          const start = this.getMatchStart(body, match.index);
-          const end = this.getMatchEnd(body, match.index);
-          const length = end - start;
-          let output = body.substr(start, length);
-          output = this.escapeHtml(output);
-          output = this.lf2br(output);
-          output = output.replace(reg, highlight);
-          return output;
-        } else {
-          return null;
-        }
-      },
-      getMatchStart(body, index) {
-        let lfCnt = 0;
-        for (let i = index; i > 0; i--) {
-          if (body[i] === '\n') lfCnt++;
-
-          if (lfCnt == 2) {
-            return i + 1;
-          }
-        }
-        return 0;
-      },
-      getMatchEnd(body, index) {
-        let lfCnt = 0;
-        const max = body.length;
-        for (let i = index; i < max; i++) {
-          if (body[i] === '\n') lfCnt++;
-
-          if (lfCnt == 2) {
-            return i - 1;
-          }
-        }
-        return max;
-      },
-      escapeHtml(unsafe) {
-        return unsafe
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
-      },
-      lf2br(txt) {
-        return txt.replace(/\n/g, '<br>')
-      }
     }
   }
 </script>

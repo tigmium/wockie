@@ -7,6 +7,7 @@ import SearchDocumentsService from '../renderer/services/SearchDocumentsService'
 import SaveDocumentsService from '../renderer/services/SaveDocumentsService';
 import LoadDocumentsService from '../renderer/services/LoadDocumentsService';
 import InitializeIndexService from "../renderer/services/InitializeIndexService";
+import HighlightMatchesService from "../renderer/services/HighlightMatchesService";
 
 
 /**
@@ -87,8 +88,9 @@ ipcMain.on('asynchronous-message', async (event, url, maxDepth, filter) => {
 })
 
 ipcMain.on('search', (event, word) => {
-  const service = new SearchDocumentsService(global.index);
-  const result = service.searchDocuments(word);
+  const highlightService = new HighlightMatchesService();
+  const searchService = new SearchDocumentsService(global.index, highlightService);
+  const result = searchService.searchDocuments(word);
   event.sender.send('search-end', result);
 })
 
