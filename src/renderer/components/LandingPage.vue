@@ -47,6 +47,17 @@
           <p class="control">
             <button class="button is-primary" v-on:click="onClickSearch">Search</button>
           </p>
+
+          <div class="condition-bool">
+            <b-radio v-model="bool"
+                     native-value="AND">
+              AND
+            </b-radio>
+            <b-radio v-model="bool"
+                     native-value="OR">
+              OR
+            </b-radio>
+          </div>
         </b-field>
       </div>
 
@@ -93,6 +104,7 @@
         word: 'test',
         docTree: [],
         matches: [],
+        bool: 'AND',
       }
     },
     methods: {
@@ -100,7 +112,7 @@
         this.$electron.shell.openExternal(link)
       },
       onClickSearch() {
-        ipcRenderer.send('search', this.word)
+        ipcRenderer.send('search', this.word, this.bool)
       },
       onClickDocLink(e, doc) {
         shell.openExternal(doc.url);
@@ -136,6 +148,8 @@
   @import "~bulma/sass/elements/button.sass";
   @import "~bulma/sass/elements/form.sass";
   @import "~bulma/sass/components/card.sass";
+  @import "~bulma";
+  @import "~buefy/src/scss/buefy";
 
   #wrapper {
     height: 100vh;
@@ -215,6 +229,11 @@
       height: 58px;
       border-bottom: $border-color solid 1px;
       background-color: $bg-color-1;
+
+      .condition-bool {
+        padding-top: 4px;
+        padding-left: 15px;
+      }
     }
 
     #result-area {

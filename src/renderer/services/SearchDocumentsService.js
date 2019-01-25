@@ -4,11 +4,12 @@ export default class {
     this.highlightService = highlightMatchesService;
   }
 
-  searchDocuments(word) {
+  searchDocuments(word, bool = 'AND') {
     let result = this.index.search(word, {
       fields: {
         body: {boost: 1}
-      }
+      },
+      bool,
     });
     result = result.map(r => {
       const doc = this.index.documentStore.getDoc(r.ref);

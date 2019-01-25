@@ -87,10 +87,10 @@ ipcMain.on('asynchronous-message', async (event, url, maxDepth, filter) => {
   event.sender.send('finish-import-progress');
 })
 
-ipcMain.on('search', (event, word) => {
+ipcMain.on('search', (event, word, bool) => {
   const highlightService = new HighlightMatchesService();
   const searchService = new SearchDocumentsService(global.index, highlightService);
-  const result = searchService.searchDocuments(word);
+  const result = searchService.searchDocuments(word, bool);
   event.sender.send('search-end', result);
 })
 

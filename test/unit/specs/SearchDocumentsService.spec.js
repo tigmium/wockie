@@ -33,13 +33,32 @@ describe('SearchDocumentsService.js', () => {
       title: "google",
       url: "https://simulatedgreg.gitbooks.io/electron-vue/content/ja/savingreading-local-files.html"
     });
+    this.index.addDoc({
+      id: 3,
+      body: "ddd",
+      title: "data",
+      url: "https://simulatedgreg.gitbooks.io/electron-vue/content/ja/using_css_frameworks.html"
+    });
 
     this.service = new SearchDocumentsService(this.index, new HighlightMatchesService());
   });
 
-  it('searchDocuments', async function () {
+  it('searchDocuments_正常完了', async function () {
     const query = 'dummy';
     const result = this.service.searchDocuments(query);
-    assert.equal(result, '');
+    assert.equal(result[0].ref, '1');
+  })
+
+  it('searchDocuments_AND検索', async function () {
+    const query = 'ddd dummy';
+    const result = this.service.searchDocuments(query, 'AND');
+    assert.equal(result[0].ref, '1');
+    assert.equal(result.length, 1);
+  })
+
+  it('searchDocuments_OR検索', async function () {
+    const query = 'ddd dummy';
+    const result = this.service.searchDocuments(query, 'OR');
+    assert.equal(result.length, 2);
   })
 })
