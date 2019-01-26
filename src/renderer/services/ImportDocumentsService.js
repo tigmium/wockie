@@ -5,7 +5,7 @@ import h2p from "html2plaintext";
 import {resolve} from 'url';
 import Url from "url-parse";
 
-const {PerformanceObserver, performance} = require('perf_hooks');
+const {performance} = require('perf_hooks');
 
 export default class {
   constructor(index) {
@@ -84,20 +84,17 @@ export default class {
 
   async fetchUrl(url, max, curr = 0) {
     if (!this.isFirstFetch(curr) && this.isAddedPath(url)) {
-      console.log('Skip: ' + url);
       this.addProgress(url, 'Skip');
       return;
     }
 
     const html = await this.getPage(url);
 
-    if (!this.isFirstFetch(curr) || !this.isAddedPath(url)) {
+    if (!this.isAddedPath(url)) {
       const doc = this.html2doc(url, html);
       this.addDoc(doc);
-      console.log('Add: ' + url);
       this.addProgress(url, 'Add');
     } else {
-      console.log('Skip: ' + url);
       this.addProgress(url, 'Skip');
     }
 

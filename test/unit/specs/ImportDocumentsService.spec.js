@@ -36,12 +36,26 @@ describe('ImportDocumentsService.js', () => {
     this.service = new ImportDocumentsService(this.index);
   });
 
+  const checkDuplication = (index) => {
+    const titles = [];
+    const docs = index.documentStore.docs;
+    for (let key of Object.keys(docs)) {
+      const doc = docs[key];
+      if (titles.includes(doc.title)) {
+        throw new Error('重複した文書が見つかりました。title=' + doc.title);
+      } else {
+        titles.push(doc.title);
+      }
+    }
+    return false;
+  };
+
   it('aaa', async function () {
     const url = 'https://simulatedgreg.gitbooks.io/electron-vue/content/ja/';
     const maxDepth = 1;
     const filter = url;
     const progressCb = null;
     await this.service.importDocuments(url, maxDepth, filter, progressCb);
-    const index = this.index;
+    checkDuplication(this.index);
   })
 })
