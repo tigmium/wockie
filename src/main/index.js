@@ -7,8 +7,8 @@ import SearchDocumentsService from '../renderer/services/SearchDocumentsService'
 import SaveDocumentsService from '../renderer/services/SaveDocumentsService';
 import LoadDocumentsService from '../renderer/services/LoadDocumentsService';
 import InitializeIndexService from "../renderer/services/InitializeIndexService";
-import HighlightMatchesService from "../renderer/services/HighlightMatchesService";
-
+import HighlightMatchesService from "../renderer/services/HighlightMatchesService"
+import DeleteDocumentService from "../renderer/services/DeleteDocumentService"
 
 /**
  * Set `__static` path to static files in production
@@ -107,3 +107,23 @@ ipcMain.on('load-documents', async (event) => {
   global.index = index;
   event.sender.send('load-documents-end', CreateDocTreeService.createDocTree(index.documentStore.docs));
 })
+
+ipcMain.on('delete-document', async (event, doc) => {
+  const deleteService = new DeleteDocumentService(global.index);
+  const saveService = new SaveDocumentsService(global.index);
+
+  deleteService.deleteDocument(doc);
+  await saveService.saveDocuments();
+
+  event.sender.send('update-documents', CreateDocTreeService.createDocTree(global.index.documentStore.docs));
+});
+
+ipcMain.on('delete-documents', async (event, docs) => {
+  const deleteService = new DeleteDocumentService(global.index);
+  const saveService = new SaveDocumentsService(global.index);
+
+  deleteService.deleteDocuments(docs);
+  await saveService.saveDocuments();
+
+  event.sender.send('update-documents', CreateDocTreeService.createDocTree(global.index.documentStore.docs));
+});

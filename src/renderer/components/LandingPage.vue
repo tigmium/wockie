@@ -16,11 +16,11 @@
       </div>
 
       <div class="content">
-        <b-collapse class="card" v-for="node in docTree" :key="node.domain" v-bind:open="false">
+        <b-collapse class="card" v-for="(node, rootIndex) in docTree" :key="node.domain" v-bind:open="false">
           <div slot="trigger" slot-scope="props" class="card-header">
             <p class="card-header-title">
               <b-icon pack="far" icon="dot-circle" size="is-small"></b-icon>
-              <span class="text">{{node.domain}}</span>
+              <span class="text documents-root" :data-root-index="rootIndex">{{node.domain}}</span>
             </p>
             <a class="card-header-icon">
               <b-icon
@@ -30,8 +30,9 @@
           </div>
           <div class="card-content">
             <div class="content">
-              <div v-for="doc in node.documents" :key="doc.id" class="doc-item">
-                <div><a v-bind:alt="doc.url" v-on:click="e => onClickDocLink(e, doc)">{{doc.title}}</a></div>
+              <div v-for="(doc, docIndex) in node.documents" :key="doc.id" class="doc-item">
+                <div class="document" :data-root-index="rootIndex" :data-document-index="docIndex"><a
+                  v-bind:alt="doc.url" v-on:click="e => onClickDocLink(e, doc)">{{doc.title}}</a></div>
               </div>
             </div>
           </div>
@@ -85,6 +86,7 @@
   import {ipcRenderer, shell} from 'electron'
   import ImportDialog from "./ImportDialog";
   import ImportProgressDialog from "./ImportProgressDialog";
+  import contextMenu from 'electron-context-menu';
 
   export default {
     name: 'landing-page',
@@ -97,7 +99,42 @@
       ipcRenderer.on('save-documents-end', this.onIpcSaveDocumentsEnd.bind(this));
       ipcRenderer.on('load-documents-end', this.onIpcLoadDocumentsEnd.bind(this));
 
-      ipcRenderer.send('load-documents')
+      ipcRenderer.send('load-documents');
+
+      contextMenu({
+        prepend: ({x, y}, browserWindow) => {
+          const getElemByPos = (x, y, clazz) => {
+            const elems = document.elementsFromPoint(x, y).filter((n) => n.classList.contains(clazz));
+            if (elems.length > 0) {
+              return elems[0];
+            } else {
+              return null;
+            }
+          };
+
+          const rootElem = getElemByPos(x, y, 'documents-root');
+          const docElem = getElemByPos(x, y, 'document');
+
+          return [{
+            label: 'Delete Document',
+            visible: docElem !== null,
+            click: (menuItem, browserWindow, event) => {
+              const docIndex = docElem.getAttribute('data-document-index');
+              const rootIndex = docElem.getAttribute('data-root-index');
+              const doc = this.docTree[rootIndex].documents[docIndex];
+              ipcRenderer.send('delete-document', doc);
+            },
+          }, {
+            label: 'Delete Documents Root',
+            visible: rootElem !== null,
+            click: (menuItem, browserWindow, event) => {
+              const index = rootElem.getAttribute('data-root-index');
+              const docs = this.docTree[index].documents;
+              ipcRenderer.send('delete-documents', docs);
+            },
+          }]
+        }
+      });
     },
     data: () => {
       return {
