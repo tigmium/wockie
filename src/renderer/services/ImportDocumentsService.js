@@ -8,8 +8,8 @@ import Url from "url-parse";
 const {performance} = require('perf_hooks');
 
 export default class {
-  constructor(index) {
-    this.index = index;
+  constructor(indexies) {
+    this.indexies = indexies;
     this.no = 0;
     this.progress = [];
     this.filter = null;
@@ -25,7 +25,7 @@ export default class {
 
   initAddedPaths() {
     const regexp = new RegExp('^' + esr(this.filter));
-    const docs = this.index.documentStore.docs;
+    const docs = this.indexies.en.documentStore.docs;
     const refs = Object.keys(docs).filter(key => {
       return regexp.test(docs[key].url);
     });
@@ -110,7 +110,7 @@ export default class {
 
   html2doc(url, html) {
     const end = this.perform('html2doc', '');
-    const id = this.index.documentStore.length;
+    const id = this.indexies.en.documentStore.length;
     const $ = cheerio.load(html);
     const title = $('title').text();
     end();
@@ -129,7 +129,8 @@ export default class {
 
   addDoc(doc) {
     const end = this.perform('ドキュメント追加', '');
-    this.index.addDoc(doc);
+    this.indexies.en.addDoc(doc);
+    this.indexies.jp.addDoc(doc);
     this.addPath(doc.url);
     end();
   }

@@ -59,6 +59,17 @@
               OR
             </b-radio>
           </div>
+
+          <div class="condition-lang">
+            <b-radio v-model="lang"
+                     native-value="en">
+              EN
+            </b-radio>
+            <b-radio v-model="lang"
+                     native-value="jp">
+              JP
+            </b-radio>
+          </div>
         </b-field>
       </div>
 
@@ -142,6 +153,7 @@
         docTree: [],
         matches: [],
         bool: 'AND',
+        lang: 'en',
       }
     },
     methods: {
@@ -149,7 +161,7 @@
         this.$electron.shell.openExternal(link)
       },
       onClickSearch() {
-        ipcRenderer.send('search', this.word, this.bool)
+        ipcRenderer.send('search', this.word, this.bool, this.lang)
       },
       onClickDocLink(e, doc) {
         shell.openExternal(doc.url);
@@ -270,6 +282,13 @@
       .condition-bool {
         padding-top: 4px;
         padding-left: 15px;
+      }
+
+      .condition-lang {
+        padding-top: 4px;
+        padding-left: 15px;
+        margin-left: 15px;
+        border-left: $border-color solid 1px;
       }
     }
 
