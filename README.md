@@ -13,23 +13,21 @@ By using Wockie, you can quickly access document with specified keywords.
 * Recursively import documents on the web to local and cache them.
 * Quick full text search from imported documents.
 
-# Demo
+# Installation
 
-// TODO
+Note: Wockie only support Windows now.
 
-# Usage
+[Download](https://github.com/t-kuni/wockie/releases)
 
-// TODO
-
-# Install
-
-// TODO
-
-# Build
+# Contribution
 
 ```
 npm install
 npm run dev
 ```
 
-# 
+## Build
+
+```
+npm run build:dir
+```
