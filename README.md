@@ -1,5 +1,9 @@
 # Wockie
 
+<div align="center">
+<img src="https://raw.githubusercontent.com/t-kuni/wockie/master/design/icon.png" alt="icon" title="icon">
+</div>
+
 Wockie is web documents searcher.
 
 Recently, the frequency of reading documents on the web such as Installation, Tutorial, Api reference, Issue, etc... is increasing.  
