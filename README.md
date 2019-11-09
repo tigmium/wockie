@@ -32,4 +32,19 @@ npm install
 npm run dev
 ```
 
-# 
+# Clean up build directory
+
+```
+npm run build:clean
+```
+
+# Release Build 
+
+```
+npm run build:dir
+```
+
+# Related Documents
+
+https://simulatedgreg.gitbooks.io/electron-vue/content/
+https://electronjs.org/docs
