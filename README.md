@@ -42,6 +42,8 @@ npm run build:clean
 npm run build:dir
 ```
 
+then zip `build/win-unpacked` directory and upload to github.
+
 # Related Documents
 
 https://simulatedgreg.gitbooks.io/electron-vue/content/
